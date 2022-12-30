@@ -1,0 +1,11 @@
+Chrome: 108.0.5359.72
+https://sourceforge.net/projects/portableapps/files/Google%20Chrome%20Portable/GoogleChromePortable_108.0.5359.72_online.paf.exe/download
+
+Chromedriver: 108.0.5359.71
+https://chromedriver.storage.googleapis.com/index.html?path=108.0.5359.71/
+https://chromedriver.chromium.org/downloads
+
+
+selenium: 4.6.0
+beautifulsoup4: 4.11.1
+vk-api: 11.9.9
