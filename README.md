@@ -15,9 +15,9 @@
 3. Скачать и установить [Google Chrome Portable](https://sourceforge.net/projects/portableapps/files/Google%20Chrome%20Portable/GoogleChromePortable_108.0.5359.72_online.paf.exe/download "Google Chrome Portable") в папку chromedriver
 4. Получить токены [Discord (аутенфикации)](https://discordgid.ru/token/ "Discord (аутенфикации)") и [ВК (VK Admin)](https://vkhost.github.io/ "ВК (VK Admin)")
 5. В файл config.ini вписать полученные токены.
-6.  Запустить необходимую версию*****  программы можно через командную строку `py <название файла>.py` или через соответствующий .bat файл. 
+6.  Запустить необходимую версию*  программы можно через командную строку `py <название файла>.py` или через соответствующий .bat файл. 
 
-*****Скрипт имеет две версии: **drpc_vk_no_activity_print.py** - при работе, программа не будет выводить информацию о смене активности в консоль и **drpc_vk_with_activity_print.py** - с выводом этого статуса.
+*Скрипт имеет две версии: **drpc_vk_no_activity_print.py** - при работе, программа не будет выводить информацию о смене активности в консоль и **drpc_vk_with_activity_print.py** - с выводом этого статуса.
 
 ### Выход из скрипта:
 Ctrl + C, после 5 секунд закрыть окно скрипта.
