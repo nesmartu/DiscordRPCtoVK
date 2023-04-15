@@ -32,9 +32,9 @@ def discord_to_vk_status():
     prev_activity = ""
     while True:
         soup = bs(driver.page_source, "html.parser")
-        if soup.find("div", {"class": "activityUserPopoutV2-3eKqzY activity-E0U09Y"}):
+        if soup.find("div", {"class": "activityUserPopoutV2-3eKqzY activity-3uaYny"}):
             is_status_set = False
-            activity_block = soup.find("div", {"class": "activityUserPopoutV2-3eKqzY activity-E0U09Y"})
+            activity_block = soup.find("div", {"class": "activityUserPopoutV2-3eKqzY activity-3uaYny"})
             buttons = activity_block.find_all('button')
             buttons_amount = len(buttons)
             texts = activity_block.findAll(text=True)
