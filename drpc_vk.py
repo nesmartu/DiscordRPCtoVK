@@ -10,6 +10,20 @@ from time import sleep
 import vk_api
 from configparser import ConfigParser
 
+cfg_data = ConfigParser()
+cfg_data.read("config.ini", encoding="utf-8")
+d_token = cfg_data.get('data', 'discord_token')
+vk_token = cfg_data.get('data', 'vk_token')
+def_status = cfg_data.get('settings', 'def_status')
+no_act_status = cfg_data.get('settings', 'no_activity_status')
+now_playing_text = cfg_data.get('settings', 'now_playing_text')
+cd = int(cfg_data.get('settings', 'cooldown'))
+cd_captcha = int(cfg_data.get('settings', 'cd_captcha'))
+activity_output = cfg_data.get('settings', 'activity_output')
+manual_captcha_input = cfg_data.get('settings', 'manual_captcha_input')
+# activity_output = bool(cfg_data.get('settings', 'activity_output'))
+# manual_captcha_input = bool(cfg_data.get('settings', 'manual_captcha_input'))
+
 
 def print_log(log):
     now = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
@@ -20,34 +34,48 @@ def vk_set_status(activity):
     try:
         api.status.set(text=activity)
     except vk_api.Captcha as captcha_error:
-        print_log("Вы разбудили капчу!\n"
-                  "Откройте ссылку и введите код ниже!\n"
-                  )
-        print_log(captcha_error.url)
-        captcha = input()
-
+        print_log("Вы разбудили капчу!")
+        if manual_captcha_input == "True":
+            print_log("Откройте ссылку и введите код ниже!\n")
+            print_log(captcha_error.url)
+            captcha = input()
+        else:
+            sleep(cd_captcha)
 
 def discord_to_vk_status():
     is_status_set = False
     prev_activity = ""
     while True:
         soup = bs(driver.page_source, "html.parser")
-        if soup.find("div", {"class": "activityUserPopoutV2-3eKqzY activity-3uaYny"}):
+        if soup.find("div", {"class": "activityUserPopoutV2__32328 activity__20c1e"}):
             is_status_set = False
-            activity_block = soup.find("div", {"class": "activityUserPopoutV2-3eKqzY activity-3uaYny"})
+            activity_block = soup.find("div", {"class": "activityUserPopoutV2__32328 activity__20c1e"})
             buttons = activity_block.find_all('button')
             buttons_amount = len(buttons)
-            texts = activity_block.findAll(text=True)
-            texts.pop(0)
+            texts = activity_block.findAll(string=True)
+            # texts.pop(0)
             if buttons_amount > 0:
                 texts = texts[:len(texts) - buttons_amount]
             activity_list = [link.string for link in texts]
-            curr_activity = now_playing_text + ' ' + ', '.join(activity_list)
-            print_log(curr_activity)
+            if "Spotify" in activity_list[0]:
+                activity_list.pop()
+                activity_list.pop()
+                if "on " and "by " in activity_list:
+                    activity_list.remove("by ")
+                    activity_list.remove("on ")
+                curr_activity = now_playing_text + f" {activity_list[0]}: {activity_list[2]} - {activity_list[1]}"
+            else:
+                playing_text = activity_list[0]
+                activity_list.pop(0)
+                playing_text = playing_text.split(' ', 1)[0]
+                curr_activity = now_playing_text + f" {playing_text}: " + ', '.join(activity_list)
             if prev_activity != curr_activity:
-                print_log("Активность изменилась!")
+                if activity_output == "True":
+                    print_log("Активность изменилась!")
                 vk_set_status(curr_activity)
-                print_log("Статус обновлен!")
+                if activity_output == "True":
+                    print_log(curr_activity)
+                    print_log("Статус обновлен!")
             prev_activity = curr_activity
             sleep(cd)
         else:
@@ -55,23 +83,19 @@ def discord_to_vk_status():
                 current_status = api.status.get()
                 if current_status != no_act_status:
                     vk_set_status(no_act_status)
-                    print_log("Статус возвращен!")
+                    api.account.setOnline(voip=1)
+                    if activity_output == "True":
+                        print_log("Статус возвращен!")
                     is_status_set = True
-                print_log("Активности нет...")
+                if activity_output == "True":
+                    print_log("Активности нет...")
             else:
-                print_log("...")
+                if activity_output == "True":
+                    print_log("...")
             sleep(cd)
 
 
 if __name__ == "__main__":
-    cfg_data = ConfigParser()
-    cfg_data.read("config.ini", encoding="utf-8")
-    d_token = cfg_data.get('data', 'd_token')
-    vk_token = cfg_data.get('data', 'vk_token')
-    def_status = cfg_data.get('status', 'def_status')
-    no_act_status = cfg_data.get('status', 'no_activity_status')
-    now_playing_text = cfg_data.get('status', 'now_playing_text')
-    cd = int(cfg_data.get('status', 'cooldown'))
     api = vk_api.VkApi(token=vk_token).get_api()
 
     options = Options()
